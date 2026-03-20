@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Miss Count Viewer</title>
+
+  <style>
+    :root{
+      --navy:#0b1f44;
+      --navy-2:#16356f;
+      --yellow:#ffd54a;
+      --white:#ffffff;
+      --bg:#f4f7fb;
+      --card:#ffffff;
+      --line:#d9e1ee;
+      --text:#14213d;
+      --muted:#6b7280;
+
+      --good:#1b5e20;      /* 0回：濃い緑 */
+      --normal:#ffffff;    /* 1〜4回：無色 */
+      --warn:#ffcdd2;      /* 5〜6回：薄い赤 */
+      --danger:#c62828;    /* 7回以上：濃い赤 */
+
+      --shadow:0 10px 24px rgba(11,31,68,.08);
+      --radius:18px;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{
+      margin:0;
+      padding:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP","Segoe UI",Roboto,Arial,sans-serif;
+    }
+
+    body{
+      padding:16px;
+    }
+
+    .app{
+      max-width:980px;
+      margin:0 auto;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+
+    .hero{
+      background:linear-gradient(135deg,var(--navy),var(--navy-2));
+      color:var(--white);
+      border-radius:24px;
+      padding:20px 18px;
+      box-shadow:var(--shadow);
+    }
+
+    .hero h1{
+      margin:0;
+      font-size:24px;
+      line-height:1.2;
+      font-weight:800;
+      letter-spacing:.02em;
+    }
+
+    .hero p{
+      margin:8px 0 0;
+      color:rgba(255,255,255,.9);
+      font-size:14px;
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px;
+    }
+
+    .sectionTitle{
+      margin:0 0 12px;
+      font-size:18px;
+      font-weight:800;
+      color:var(--navy);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .field.full{
+      grid-column:1 / -1;
+    }
+
+    .label{
+      font-size:13px;
+      font-weight:700;
+      color:var(--navy);
+    }
+
+    select,
+    input[type="date"]{
+      width:100%;
+      min-height:46px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:#fff;
+      color:var(--text);
+      padding:10px 12px;
+      font-size:15px;
+      outline:none;
+    }
+
+    select:focus,
+    input[type="date"]:focus{
+      border-color:var(--navy-2);
+      box-shadow:0 0 0 3px rgba(22,53,111,.12);
+    }
+
+    .seg{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .segBtn{
+      appearance:none;
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--navy);
+      min-height:42px;
+      padding:0 14px;
+      border-radius:999px;
+      font-size:14px;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    .segBtn.active{
+      background:var(--yellow);
+      border-color:#e1b900;
+      color:#3b2f00;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      margin-top:14px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      min-height:46px;
+      border-radius:12px;
+      padding:0 18px;
+      font-size:15px;
+      font-weight:800;
+    }
+
+    .btnPrimary{
+      background:var(--navy);
+      color:var(--white);
+    }
+
+    .btnSecondary{
+      background:#eef3fb;
+      color:var(--navy);
+      border:1px solid var(--line);
+    }
+
+    .meta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      margin-top:10px;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:#f8fafc;
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:13px;
+      font-weight:700;
+      color:var(--navy);
+    }
+
+    .status{
+      min-height:24px;
+      font-size:14px;
+      font-weight:700;
+      color:var(--muted);
+      margin-top:4px;
+    }
+
+    .status.error{ color:#b71c1c; }
+    .status.ok{ color:#1b5e20; }
+
+    .resultHead{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+
+    .resultTitle{
+      margin:0;
+      font-size:20px;
+      color:var(--navy);
+      font-weight:800;
+    }
+
+    .resultSub{
+      margin:6px 0 0;
+      font-size:14px;
+      color:var(--muted);
+    }
+
+    .totalBox{
+      min-width:140px;
+      background:linear-gradient(135deg,#fff8da,#fff0a8);
+      border:1px solid #efd86f;
+      border-radius:16px;
+      padding:12px 14px;
+    }
+
+    .totalLabel{
+      font-size:12px;
+      font-weight:800;
+      color:#6b5a00;
+      margin-bottom:4px;
+    }
+
+    .totalValue{
+      font-size:30px;
+      line-height:1;
+      font-weight:900;
+      color:#3b2f00;
+    }
+
+    .legend{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+
+    .legendItem{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      color:var(--muted);
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:6px 10px;
+    }
+
+    .legendSwatch{
+      width:14px;
+      height:14px;
+      border-radius:4px;
+      border:1px solid rgba(0,0,0,.08);
+      flex:0 0 auto;
+    }
+
+    .tableWrap{
+      overflow:auto;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fff;
+    }
+
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      min-width:520px;
+    }
+
+    th, td{
+      padding:14px 12px;
+      border-bottom:1px solid var(--line);
+      text-align:center;
+      font-size:15px;
+    }
+
+    th{
+      background:#f8fbff;
+      color:var(--navy);
+      font-size:13px;
+      font-weight:800;
+      position:sticky;
+      top:0;
+      z-index:1;
+    }
+
+    td:first-child, th:first-child{
+      text-align:left;
+      width:55%;
+    }
+
+    tr:last-child td{
+      border-bottom:none;
+    }
+
+    .countCell{
+      font-weight:900;
+      font-size:18px;
+      border-left:1px solid var(--line);
+    }
+
+    .cell-good{
+      background:var(--good);
+      color:#fff;
+    }
+
+    .cell-normal{
+      background:var(--normal);
+      color:var(--text);
+    }
+
+    .cell-warn{
+      background:var(--warn);
+      color:#7f1d1d;
+    }
+
+    .cell-danger{
+      background:var(--danger);
+      color:#fff;
+    }
+
+    .empty{
+      padding:22px 16px;
+      text-align:center;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    .loading{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .spinner{
+      width:16px;
+      height:16px;
+      border-radius:50%;
+      border:2px solid #c9d4ea;
+      border-top-color:var(--navy);
+      animation:spin .8s linear infinite;
+    }
+
+    @keyframes spin{
+      to{ transform:rotate(360deg); }
+    }
+
+    @media (max-width: 720px){
+      body{ padding:12px; }
+
+      .hero{
+        border-radius:18px;
+        padding:16px 14px;
+      }
+
+      .hero h1{
+        font-size:21px;
+      }
+
+      .card{
+        padding:14px;
+        border-radius:16px;
+      }
+
+      .grid{
+        grid-template-columns:1fr;
+      }
+
+      .resultTitle{
+        font-size:18px;
+      }
+
+      .totalBox{
+        width:100%;
+      }
+
+      th, td{
+        padding:12px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="hero">
+      <h1>Miss Count Viewer</h1>
+      <p>選手ごとのミス回数を、単日または期間指定で確認できます。</p>
+    </section>
+
+    <section class="card">
+      <h2 class="sectionTitle">条件設定</h2>
+
+      <div class="grid">
+        <div class="field full">
+          <label class="label" for="playerSelect">選手名</label>
+          <select id="playerSelect">
+            <option value="">選手を選択してください</option>
+          </select>
+        </div>
+
+        <div class="field full">
+          <div class="label">集計方法</div>
+          <div class="seg">
+            <button id="modeDayBtn" class="segBtn active" type="button" data-mode="day">単日</button>
+            <button id="modeRangeBtn" class="segBtn" type="button" data-mode="range">期間指定</button>
+          </div>
+        </div>
+
+        <div id="dayField" class="field full">
+          <label class="label" for="targetDate">日付</label>
+          <input id="targetDate" type="date" />
+        </div>
+
+        <div id="rangeFields" class="field full hidden">
+          <div class="grid">
+            <div class="field">
+              <label class="label" for="dateFrom">From</label>
+              <input id="dateFrom" type="date" />
+            </div>
+            <div class="field">
+              <label class="label" for="dateTo">To</label>
+              <input id="dateTo" type="date" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="showBtn" class="btn btnPrimary" type="button">表示</button>
+        <button id="reloadPlayersBtn" class="btn btnSecondary" type="button">選手一覧を再読込</button>
+      </div>
+
+      <div id="status" class="status"></div>
+    </section>
+
+    <section class="card">
+      <div class="resultHead">
+        <div>
+          <h2 class="resultTitle">集計結果</h2>
+          <p id="resultSub" class="resultSub">まだ表示されていません</p>
+        </div>
+
+        <div class="totalBox">
+          <div class="totalLabel">合計ミス回数</div>
+          <div id="totalCount" class="totalValue">-</div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div class="legendItem">
+          <span class="legendSwatch" style="background: var(--good);"></span>0回
+        </div>
+        <div class="legendItem">
+          <span class="legendSwatch" style="background: var(--normal);"></span>1〜4回
+        </div>
+        <div class="legendItem">
+          <span class="legendSwatch" style="background: var(--warn);"></span>5〜6回
+        </div>
+        <div class="legendItem">
+          <span class="legendSwatch" style="background: var(--danger);"></span>7回以上
+        </div>
+      </div>
+
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>カテゴリ</th>
+              <th>ミス回数</th>
+            </tr>
+          </thead>
+          <tbody id="resultBody">
+            <tr>
+              <td colspan="2" class="empty">条件を選んで「表示」を押してください。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="meta">
+        <span id="playerChip" class="chip hidden"></span>
+        <span id="periodChip" class="chip hidden"></span>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    /*********************************************************
+     * 設定
+     *********************************************************/
+    const SERVICE_URL = "https://script.google.com/macros/s/AKfycbxXlkbVXVFT2UDqD8J3pBvg-1Yon9idoSPlWRaewT8bhvnhhXx_f66MLnUfXnQO03QOmg/exec";
+
+    // 8カテゴリ名を固定で並べたい場合はここを変更
+    const CATEGORY_MASTER = [
+      "右パス",
+      "右キャッチ",
+      "左パス",
+      "左キャッチ",
+      "右グラボ",
+      "左グラボ",
+      "ステーションパス",
+      "ステーションキャッチ"
+    ];
+
+    /*********************************************************
+     * 状態
+     *********************************************************/
+    let currentMode = "day";
+    let playersCache = [];
+
+    /*********************************************************
+     * DOM
+     *********************************************************/
+    const $playerSelect = document.getElementById("playerSelect");
+    const $modeDayBtn = document.getElementById("modeDayBtn");
+    const $modeRangeBtn = document.getElementById("modeRangeBtn");
+    const $dayField = document.getElementById("dayField");
+    const $rangeFields = document.getElementById("rangeFields");
+    const $targetDate = document.getElementById("targetDate");
+    const $dateFrom = document.getElementById("dateFrom");
+    const $dateTo = document.getElementById("dateTo");
+    const $showBtn = document.getElementById("showBtn");
+    const $reloadPlayersBtn = document.getElementById("reloadPlayersBtn");
+    const $status = document.getElementById("status");
+    const $resultBody = document.getElementById("resultBody");
+    const $resultSub = document.getElementById("resultSub");
+    const $totalCount = document.getElementById("totalCount");
+    const $playerChip = document.getElementById("playerChip");
+    const $periodChip = document.getElementById("periodChip");
+
+    /*********************************************************
+     * 初期化
+     *********************************************************/
+    init();
+
+    function init(){
+      const today = formatDateInput(new Date());
+      $targetDate.value = today;
+      $dateFrom.value = today;
+      $dateTo.value = today;
+
+      bindEvents();
+      switchMode("day");
+      loadPlayers();
+    }
+
+    function bindEvents(){
+      $modeDayBtn.addEventListener("click", () => switchMode("day"));
+      $modeRangeBtn.addEventListener("click", () => switchMode("range"));
+      $showBtn.addEventListener("click", onShow);
+      $reloadPlayersBtn.addEventListener("click", loadPlayers);
+    }
+
+    /*********************************************************
+     * モード切替
+     *********************************************************/
+    function switchMode(mode){
+      currentMode = mode;
+
+      $modeDayBtn.classList.toggle("active", mode === "day");
+      $modeRangeBtn.classList.toggle("active", mode === "range");
+
+      $dayField.classList.toggle("hidden", mode !== "day");
+      $rangeFields.classList.toggle("hidden", mode !== "range");
+    }
+
+    /*********************************************************
+     * UI補助
+     *********************************************************/
+    function setStatus(message, type = ""){
+      $status.className = "status" + (type ? " " + type : "");
+      $status.innerHTML = message || "";
+    }
+
+    function setLoading(message){
+      setStatus(`<span class="loading"><span class="spinner"></span>${escapeHtml(message)}</span>`);
+    }
+
+    function escapeHtml(value){
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function formatDateInput(date){
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function getCountClass(count){
+      if (count === 0) return "cell-good";
+      if (count >= 1 && count <= 4) return "cell-normal";
+      if (count >= 5 && count <= 6) return "cell-warn";
+      return "cell-danger";
+    }
+
+    function setEmptyResult(message){
+      $resultBody.innerHTML = `
+        <tr>
+          <td colspan="2" class="empty">${escapeHtml(message)}</td>
+        </tr>
+      `;
+      $totalCount.textContent = "-";
+      $resultSub.textContent = "まだ表示されていません";
+      $playerChip.classList.add("hidden");
+      $periodChip.classList.add("hidden");
+    }
+
+    /*********************************************************
+     * JSONP通信
+     *********************************************************/
+    function apiJsonp(params = {}){
+      return new Promise((resolve, reject) => {
+        if (!SERVICE_URL || SERVICE_URL.includes("ここにGAS")) {
+          reject(new Error("SERVICE_URL が未設定です"));
+          return;
+        }
+
+        const callbackName = "__jsonp_cb_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
+        const script = document.createElement("script");
+
+        const url = new URL(SERVICE_URL);
+        Object.entries(params).forEach(([k, v]) => {
+          if (v !== undefined && v !== null && v !== "") {
+            url.searchParams.set(k, v);
+          }
+        });
+        url.searchParams.set("callback", callbackName);
+
+        const cleanup = () => {
+          delete window[callbackName];
+          if (script.parentNode) script.parentNode.removeChild(script);
+        };
+
+        const timer = setTimeout(() => {
+          cleanup();
+          reject(new Error("通信がタイムアウトしました"));
+        }, 15000);
+
+        window[callbackName] = (data) => {
+          clearTimeout(timer);
+          cleanup();
+          resolve(data);
+        };
+
+        script.onerror = () => {
+          clearTimeout(timer);
+          cleanup();
+          reject(new Error("通信に失敗しました"));
+        };
+
+        script.src = url.toString();
+        document.body.appendChild(script);
+      });
+    }
+
+    /*********************************************************
+     * 選手一覧
+     *********************************************************/
+    async function loadPlayers(){
+      try{
+        setLoading("選手一覧を読み込んでいます...");
+        const res = await apiJsonp({ action: "getActivePlayers" });
+
+        if (!res || !res.ok) {
+          throw new Error(res && res.error ? res.error : "選手一覧の取得に失敗しました");
+        }
+
+        const players = Array.isArray(res.players) ? res.players : [];
+        playersCache = players.filter(p => String(p.status || "active") !== "hidden");
+
+        renderPlayerOptions(playersCache);
+        setStatus(`選手一覧を読み込みました（${playersCache.length}名）`, "ok");
+      }catch(err){
+        console.error(err);
+        renderPlayerOptions([]);
+        setStatus(err.message || "選手一覧の取得に失敗しました", "error");
+      }
+    }
+
+    function renderPlayerOptions(players){
+      const current = $playerSelect.value;
+      $playerSelect.innerHTML = `<option value="">選手を選択してください</option>`;
+
+      players.forEach(p => {
+        const opt = document.createElement("option");
+        opt.value = p.playerId;
+        opt.textContent = p.position ? `${p.name}（${p.position}）` : p.name;
+        opt.dataset.name = p.name || "";
+        $playerSelect.appendChild(opt);
+      });
+
+      if ([...$playerSelect.options].some(opt => opt.value === current)) {
+        $playerSelect.value = current;
+      }
+    }
+
+    /*********************************************************
+     * 集計表示
+     *********************************************************/
+    async function onShow(){
+      const playerId = $playerSelect.value;
+      if (!playerId) {
+        setStatus("選手を選択してください", "error");
+        return;
+      }
+
+      try{
+        let params = { action: "getMistakeSummary", playerId };
+
+        if (currentMode === "day") {
+          if (!$targetDate.value) {
+            setStatus("日付を選択してください", "error");
+            return;
+          }
+          params.mode = "day";
+          params.date = $targetDate.value;
+        } else {
+          if (!$dateFrom.value || !$dateTo.value) {
+            setStatus("From / To を入力してください", "error");
+            return;
+          }
+          if ($dateFrom.value > $dateTo.value) {
+            setStatus("From は To 以前の日付にしてください", "error");
+            return;
+          }
+          params.mode = "range";
+          params.from = $dateFrom.value;
+          params.to = $dateTo.value;
+        }
+
+        setLoading("集計結果を取得しています...");
+        const res = await apiJsonp(params);
+
+        if (!res || !res.ok) {
+          throw new Error(res && res.error ? res.error : "集計結果の取得に失敗しました");
+        }
+
+        renderSummary(res);
+        setStatus("集計結果を表示しました", "ok");
+      }catch(err){
+        console.error(err);
+        setStatus(err.message || "集計結果の取得に失敗しました", "error");
+        setEmptyResult("集計結果を表示できませんでした。");
+      }
+    }
+
+    function renderSummary(res){
+      const selectedPlayer = playersCache.find(p => String(p.playerId) === String($playerSelect.value));
+      const playerName = (res.player && res.player.name) || (selectedPlayer && selectedPlayer.name) || "選手";
+      const periodLabel = buildPeriodLabel();
+
+      const categoryMap = {};
+      if (Array.isArray(res.categories)) {
+        res.categories.forEach(item => {
+          const name = String(item.category || "");
+          const count = Number(item.count || 0);
+          categoryMap[name] = count;
+        });
+      }
+
+      const categories = CATEGORY_MASTER.map(name => ({
+        category: name,
+        count: Number(categoryMap[name] || 0)
+      }));
+
+      const total = typeof res.total === "number"
+        ? res.total
+        : categories.reduce((sum, x) => sum + x.count, 0);
+
+      const rowsHtml = categories.map(item => {
+        const klass = getCountClass(item.count);
+        return `
+          <tr>
+            <td>${escapeHtml(item.category)}</td>
+            <td class="countCell ${klass}">${item.count}</td>
+          </tr>
+        `;
+      }).join("");
+
+      $resultBody.innerHTML = rowsHtml || `
+        <tr><td colspan="2" class="empty">該当データがありません。</td></tr>
+      `;
+
+      $totalCount.textContent = total;
+      $resultSub.textContent = `${playerName} の集計結果`;
+
+      $playerChip.textContent = `選手：${playerName}`;
+      $playerChip.classList.remove("hidden");
+
+      $periodChip.textContent = `対象：${periodLabel}`;
+      $periodChip.classList.remove("hidden");
+    }
+
+    function buildPeriodLabel(){
+      if (currentMode === "day") {
+        return $targetDate.value || "-";
+      }
+      return `${$dateFrom.value || "-"} 〜 ${$dateTo.value || "-"}`;
+    }
+  </script>
+</body>
+</html>
