@@ -95,7 +95,7 @@
       flex-direction:column;
       gap:6px;
       min-width:0;
-      overflow:hidden;
+      overflow:visible;
     }
 
     .field.full{
@@ -121,6 +121,9 @@
       padding:10px 12px;
       font-size:15px;
       outline:none;
+      appearance:none;
+      -webkit-appearance:none;
+      background-clip:padding-box;
     }
 
     select:focus,
@@ -472,7 +475,7 @@ td:last-child, th:last-child{
 
 
       .card{
-        padding:14px;
+        padding:12px;
         border-radius:14px;
       }
 
@@ -504,6 +507,9 @@ td:last-child, th:last-child{
     padding:8px 8px;
     font-size:14px;
     border-radius:10px;
+    appearance:none;
+    -webkit-appearance:none;
+    background-clip:padding-box;
 }
 
   .seg{
