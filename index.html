@@ -95,6 +95,7 @@
       flex-direction:column;
       gap:6px;
       min-width:0;
+      overflow:hidden;
     }
 
     .field.full{
@@ -471,7 +472,7 @@ td:last-child, th:last-child{
 
 
       .card{
-        padding:12px;
+        padding:14px;
         border-radius:14px;
       }
 
@@ -495,10 +496,15 @@ td:last-child, th:last-child{
 
   select,
   input[type="date"]{
+    display:block;
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    height:44px;
+    padding:8px 8px;
     font-size:14px;
-    min-height:44px;
-    padding:9px 10px;
-  }
+    border-radius:10px;
+}
 
   .seg{
     gap:6px;
@@ -542,6 +548,10 @@ td:last-child, th:last-child{
 
       th, td{
         padding:10px 6px;
+      }
+      #rangeFields .grid{
+        grid-template-columns: 1fr;
+        gap: 10px;
       }
     }
     .celebrationLayer{
@@ -634,7 +644,7 @@ td:last-child, th:last-child{
           <p id="resultSub" class="resultSub">まだ表示されていません</p>
         </div>
 
-        <div id="totalBox" class="totalBox"></div>
+        <div id="totalBox" class="totalBox">
           <div class="totalLabel">合計ミス回数</div>
           <div id="totalCount" class="totalValue">-</div>
         </div>
