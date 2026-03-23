@@ -1010,11 +1010,12 @@ td:last-child, th:last-child{
 
       $periodChip.textContent = `対象：${periodLabel}`;
       $periodChip.classList.remove("hidden");
-    }
-    if (total === 0) {
+
+      if (total === 0) {
         launchPerfectAnimation();
     }
-
+    }
+    
     function buildPeriodLabel(){
       if (currentMode === "day") {
         return $targetDate.value || "-";
