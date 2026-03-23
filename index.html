@@ -94,6 +94,7 @@
       display:flex;
       flex-direction:column;
       gap:6px;
+      min-width:0;
     }
 
     .field.full{
@@ -109,6 +110,8 @@
     select,
     input[type="date"]{
       width:100%;
+      min-width:0;
+      max-width:100%;
       min-height:46px;
       border:1px solid var(--line);
       border-radius:12px;
@@ -236,26 +239,64 @@
     }
 
     .totalBox{
-      min-width:140px;
-      background:linear-gradient(135deg,#fff8da,#fff0a8);
-      border:1px solid #efd86f;
-      border-radius:16px;
-      padding:12px 14px;
-    }
+  position:relative;
+  min-width:140px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px 14px;
+  overflow:hidden;
+  transition:.25s ease;
+}
 
-    .totalLabel{
-      font-size:12px;
-      font-weight:800;
-      color:#6b5a00;
-      margin-bottom:4px;
-    }
+.totalLabel{
+  font-size:12px;
+  font-weight:800;
+  margin-bottom:4px;
+}
 
-    .totalValue{
-      font-size:30px;
-      line-height:1;
-      font-weight:900;
-      color:#3b2f00;
-    }
+.totalValue{
+  font-size:30px;
+  line-height:1;
+  font-weight:900;
+}
+
+.totalBox.cell-good{
+  background:var(--good);
+  border-color:var(--good);
+  color:#fff;
+}
+
+.totalBox.cell-normal{
+  background:var(--normal);
+  border-color:var(--line);
+  color:var(--text);
+}
+
+.totalBox.cell-warn{
+  background:var(--warn);
+  border-color:#ef9a9a;
+  color:#7f1d1d;
+}
+
+.totalBox.cell-danger{
+  background:var(--danger);
+  border-color:var(--danger);
+  color:#fff;
+}
+
+.totalBox.cell-good .totalLabel,
+.totalBox.cell-good .totalValue,
+.totalBox.cell-danger .totalLabel,
+.totalBox.cell-danger .totalValue{
+  color:inherit;
+}
+
+.totalBox.cell-normal .totalLabel,
+.totalBox.cell-normal .totalValue,
+.totalBox.cell-warn .totalLabel,
+.totalBox.cell-warn .totalValue{
+  color:inherit;
+}
 
     .legend{
       display:flex;
@@ -285,7 +326,7 @@
     }
 
     .tableWrap{
-      overflow:auto;
+      overflow:hidden;
       border:1px solid var(--line);
       border-radius:16px;
       background:#fff;
@@ -295,20 +336,21 @@
       width:100%;
       border-collapse:separate;
       border-spacing:0;
-      min-width:520px;
+      table-layout:fixed;
     }
 
     th, td{
-      padding:14px 12px;
+      padding:12px 8px;
       border-bottom:1px solid var(--line);
       text-align:center;
-      font-size:15px;
+      font-size:14px;
+      word-break:break-word;
     }
 
     th{
       background:#f8fbff;
       color:var(--navy);
-      font-size:13px;
+      font-size:12px;
       font-weight:800;
       position:sticky;
       top:0;
@@ -317,16 +359,16 @@
 
     td:first-child, th:first-child{
       text-align:left;
-      width:55%;
+      width:68%;
     }
 
-    tr:last-child td{
-      border-bottom:none;
+    td:last-child th:last-child{
+        width:32%;
     }
 
     .countCell{
       font-weight:900;
-      font-size:18px;
+      font-size:16px;
       border-left:1px solid var(--line);
     }
 
@@ -381,45 +423,162 @@
     }
 
     @media (max-width: 720px){
-      body{ padding:12px; }
+    body{
+        padding:10px;
+    }
+    
+    .app{
+    max-width:100%;
+    gap:12px;
+}
+.tableWrap{
+  border-radius:12px;
+}
 
-      .hero{
-        border-radius:18px;
-        padding:16px 14px;
+th, td{
+  padding:9px 6px;
+  font-size:12px;
+}
+
+th{
+  font-size:11px;
+}
+
+td:first-child, th:first-child{
+  width:64%;
+}
+
+td:last-child, th:last-child{
+  width:36%;
+}
+
+.countCell{
+  font-size:15px;
+}
+
+    .hero{
+        border-radius:16px;
+        padding:14px 12px;
       }
 
       .hero h1{
-        font-size:21px;
+        font-size:20px;
       }
 
+      .hero p{
+        font-size:13px;
+    }
+
+
       .card{
-        padding:14px;
-        border-radius:16px;
+        padding:12px;
+        border-radius:14px;
       }
+
+      .sectionTitle{
+        font-size:16px;
+        margin-bottom:10px;
+    }
 
       .grid{
         grid-template-columns:1fr;
+        gap:10px;
       }
 
+      .field.full{
+        grid-column:auto;
+    }
+    
+    .label{
+        font-size:12px;
+    }
+
+  select,
+  input[type="date"]{
+    font-size:14px;
+    min-height:44px;
+    padding:9px 10px;
+  }
+
+  .seg{
+    gap:6px;
+  }
+
+  .segBtn{
+    min-height:40px;
+    padding:0 12px;
+    font-size:13px;
+  }
+
+  .actions{
+    flex-direction:column;
+    gap:8px;
+  }
+
+  .btn{
+    width:100%;
+    min-height:44px;
+    font-size:14px;
+  }
+
+  .resultHead{
+    flex-direction:column;
+    align-items:stretch;
+    gap:10px;
+  }
+
       .resultTitle{
-        font-size:18px;
+        font-size:17px;
       }
+
+      .resultSub{
+        font-size:13px;
+    }
 
       .totalBox{
         width:100%;
+        min-width:0;
       }
 
       th, td{
-        padding:12px 10px;
+        padding:10px 6px;
       }
     }
+    .celebrationLayer{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+  z-index:9999;
+}
+
+.dropEmoji{
+  position:absolute;
+  top:-40px;
+  font-size:28px;
+  animation:dropEmoji 2.8s linear forwards;
+  opacity:0.95;
+}
+
+@keyframes dropEmoji{
+  0%{
+    transform:translateY(-40px) rotate(0deg);
+    opacity:0;
+  }
+  10%{
+    opacity:1;
+  }
+  100%{
+    transform:translateY(calc(100vh + 60px)) rotate(360deg);
+    opacity:0;
+  }
+}
   </style>
 </head>
 <body>
   <div class="app">
     <section class="hero">
-      <h1>Miss Count Viewer</h1>
-      <p>選手ごとのミス回数を、単日または期間指定で確認できます。</p>
+      <h1>スクエア</h1>
     </section>
 
     <section class="card">
@@ -436,7 +595,7 @@
         <div class="field full">
           <div class="label">集計方法</div>
           <div class="seg">
-            <button id="modeDayBtn" class="segBtn active" type="button" data-mode="day">単日</button>
+            <button id="modeDayBtn" class="segBtn active" type="button" data-mode="day">日付</button>
             <button id="modeRangeBtn" class="segBtn" type="button" data-mode="range">期間指定</button>
           </div>
         </div>
@@ -475,7 +634,7 @@
           <p id="resultSub" class="resultSub">まだ表示されていません</p>
         </div>
 
-        <div class="totalBox">
+        <div id="totalBox" class="totalBox"></div>
           <div class="totalLabel">合計ミス回数</div>
           <div id="totalCount" class="totalValue">-</div>
         </div>
@@ -562,6 +721,8 @@
     const $totalCount = document.getElementById("totalCount");
     const $playerChip = document.getElementById("playerChip");
     const $periodChip = document.getElementById("periodChip");
+    const $totalBox = document.getElementById("totalBox");
+    const $celebrationLayer = document.getElementById("celebrationLayer");
 
     /*********************************************************
      * 初期化
@@ -644,6 +805,7 @@
       $resultSub.textContent = "まだ表示されていません";
       $playerChip.classList.add("hidden");
       $periodChip.classList.add("hidden");
+      $totalBox.className = "totalBox";
     }
 
     /*********************************************************
@@ -812,7 +974,7 @@
         const klass = getCountClass(item.count);
         return `
           <tr>
-            <td>${escapeHtml(item.category)}</td>
+            <td class="${klass}">${escapeHtml(item.category)}</td>
             <td class="countCell ${klass}">${item.count}</td>
           </tr>
         `;
@@ -822,6 +984,8 @@
         <tr><td colspan="2" class="empty">該当データがありません。</td></tr>
       `;
 
+      const totalClass = getCountClass(total);
+      $totalBox.className = `totalBox ${totalClass}`;
       $totalCount.textContent = total;
       $resultSub.textContent = `${playerName} の集計結果`;
 
@@ -831,6 +995,9 @@
       $periodChip.textContent = `対象：${periodLabel}`;
       $periodChip.classList.remove("hidden");
     }
+    if (total === 0) {
+        launchPerfectAnimation();
+    }
 
     function buildPeriodLabel(){
       if (currentMode === "day") {
@@ -838,6 +1005,30 @@
       }
       return `${$dateFrom.value || "-"} 〜 ${$dateTo.value || "-"}`;
     }
+    function launchPerfectAnimation(){
+  $celebrationLayer.innerHTML = "";
+  $celebrationLayer.classList.remove("hidden");
+
+  const emojis = ["👍", "🥍"];
+  const count = 24;
+
+  for(let i = 0; i < count; i++){
+    const el = document.createElement("div");
+    el.className = "dropEmoji";
+    el.textContent = emojis[i % emojis.length];
+    el.style.left = `${Math.random() * 100}vw`;
+    el.style.animationDelay = `${Math.random() * 0.8}s`;
+    el.style.fontSize = `${24 + Math.random() * 18}px`;
+    $celebrationLayer.appendChild(el);
+  }
+
+  setTimeout(() => {
+    $celebrationLayer.innerHTML = "";
+    $celebrationLayer.classList.add("hidden");
+  }, 3800);
+}
+
   </script>
+  <div id="celebrationLayer" class="celebrationLayer hidden"></div>
 </body>
 </html>
