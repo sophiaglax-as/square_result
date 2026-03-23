@@ -694,6 +694,8 @@ td:last-child, th:last-child{
     </section>
   </div>
 
+  <div id="celebrationLayer" class="celebrationLayer hidden"></div>
+
   <script>
     /*********************************************************
      * 設定
@@ -1015,7 +1017,7 @@ td:last-child, th:last-child{
         launchPerfectAnimation();
     }
     }
-    
+
     function buildPeriodLabel(){
       if (currentMode === "day") {
         return $targetDate.value || "-";
@@ -1044,8 +1046,6 @@ td:last-child, th:last-child{
     $celebrationLayer.classList.add("hidden");
   }, 3800);
 }
-
   </script>
-  <div id="celebrationLayer" class="celebrationLayer hidden"></div>
 </body>
 </html>
