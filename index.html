@@ -1025,6 +1025,8 @@ td:last-child, th:last-child{
       return `${$dateFrom.value || "-"} 〜 ${$dateTo.value || "-"}`;
     }
     function launchPerfectAnimation(){
+        if (!$celebrationLayer) return;
+
   $celebrationLayer.innerHTML = "";
   $celebrationLayer.classList.remove("hidden");
 
@@ -1042,6 +1044,7 @@ td:last-child, th:last-child{
   }
 
   setTimeout(() => {
+    if (!$celebrationLayer) return;
     $celebrationLayer.innerHTML = "";
     $celebrationLayer.classList.add("hidden");
   }, 3800);
